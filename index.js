@@ -52,11 +52,21 @@ function adapter(uri, opts){
   var node = opts.node || false; // Each instance is given a different name to track the ids written by that instance
 
   // init clients if needed
-  if (!pub) pub = socket ? redis(socket) : redis(port, host, { auth_pass: password });
-  if (!sub) sub = socket
-    ? redis(socket, { detect_buffers: true })
-    : redis(port, host, {detect_buffers: true, auth_pass: password});
-  if (!data) data = socket ? redis(socket) : redis(port, host, { auth_pass: password });
+  if (password){
+    // when redis is password protected
+    if (!pub) pub = socket ? redis(socket) : redis(port, host, { auth_pass: password });
+    if (!sub) sub = socket
+      ? redis(socket, { detect_buffers: true })
+      : redis(port, host, {detect_buffers: true, auth_pass: password});
+    if (!data) data = socket ? redis(socket) : redis(port, host, { auth_pass: password });
+  } else {
+    // for redis without password
+    if (!pub) pub = socket ? redis(socket) : redis(port, host);
+    if (!sub) sub = socket
+      ? redis(socket, { detect_buffers: true })
+      : redis(port, host, {detect_buffers: true});
+    if (!data) data = socket ? redis(socket) : redis(port, host);
+  }
 
 
   // this server's key
